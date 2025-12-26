@@ -83,6 +83,7 @@ void program_exec() {
 
 	// load libraries --------------------------------------@/
 	program_lua_fileRequireBuiltin("workdata/libtask.lua","libtask");
+	program_lua_fileRequireBuiltin("workdata/liblog.lua","liblog");
 	printf("stack top: %d\n",lua_gettop(lu));
 
 	// run lua function..? ---------------------------------@/
@@ -142,6 +143,8 @@ void program_lua_fileRequireBuiltin(const char* filename, const char* modulename
 
 	lua_pop(lu,-2); // pop package.loaded
 	lua_pop(lu,-1); // pop module
+	
+	printf("loaded library '%s'\n",modulename);
 }
 void program_lua_pushRegFn(int fn_idx) {
 	auto workarea = program_workGet();

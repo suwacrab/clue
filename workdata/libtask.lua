@@ -1,12 +1,6 @@
+-- task class ---------------------------------------------------------------@/
 local task_mt = {}
 task_mt.__index = task_mt
-
-local function printf(str,...)
-	print(str:format(...))
-end
-local function printf_framed(str,...)
-	printf('frm.%6d: %s',api.timer_getFrame(),str:format(...))
-end
 
 local function task_new(name,fn)
 	name = name or "none"
@@ -62,26 +56,36 @@ function task_mt:waitInf()
 end
 
 function task_mt:__tostring()
-	return ("@task{ name: '%s'; coro: %s; }"):format(self.name,self._coro)
+	return ("@task{ '%s'; coro: [%s]; }"):format(self.name,self._coro)
 end
 
-local tasklist_mt = {}
-tasklist_mt.__index = tasklist_mt
-function tasklist_mt:add(prio,name,fn)
+-- taskgarden class -----------------------------------------------------------@/
+local taskgarden_mt = {}
+taskgarden_mt.__index = taskgarden_mt
+function taskgarden_mt:add(prio,name,fn)
 	local task = task_new(name,fn)
 	local entry = { task = task, priority = prio }
-	self.data[entry] = true
+	self.data[entry] = true;
 end
-function tasklist_mt:get_all()
+function taskgarden_mt:get_all(sortmode)
 	local list = {}
 	for entry,_ in next,self.data do
 		table.insert(list,entry)
 	end
+	if sortmode == 'prio' then
+		table.sort(list,function(a,b) return a.priority<b.priority end)
+	end
 	return list
 end
-function tasklist_mt:step_all()
-	local tasks_toExec = self:get_all()
-	table.sort(tasks_toExec,function(a,b) return a.priority<b.priority end)
+function taskgarden_mt:get_count()
+	local n = 0
+	for _,_ in next,self.data do
+		n = n+1
+	end
+	return n
+end
+function taskgarden_mt:step_all()
+	local tasks_toExec = self:get_all('prio')
 
 	for _,entry in next,tasks_toExec do
 		entry.task:step()
@@ -90,19 +94,31 @@ function tasklist_mt:step_all()
 		end
 	end
 end
-function tasklist_mt:is_allDone()
+function taskgarden_mt:is_allDone()
 	return next(self.data) == nil
 end
 
-local function tasklist_new()
-	local tasklist 
-	return setmetatable({
+function taskgarden_mt:__tostring()
+	local names = {}
+	for _,entry in next,self:get_all('prio') do
+		table.insert(names,("'%s'"):format(entry.task.name))
+	end
+	
+	return ("@taskgarden{ '%s'; tasks: %d [%s] }"):format(self.name,self:get_count(),table.concat(names,', '))
+end
+
+local function taskgarden_new(name)
+	name = name or "none";
+	assert(type(name) == "string", "invalid taskgarden name")
+	local garden = {
+		name = name;
 		data = {};
-	},tasklist_mt)
+	}
+	return setmetatable(garden,taskgarden_mt)
 end
 
 return {
 	task_new = task_new;
-	tasklist_new = tasklist_new;
+	taskgarden_new = taskgarden_new;
 }
 

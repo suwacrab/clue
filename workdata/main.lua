@@ -1,20 +1,17 @@
 -- main.lua -----------------------------------------------------------------@/
-local function printf(str,...)
-	print(str:format(...))
-end
 local function printf_framed(str,...)
-	printf('frm.%6d: %s',api.timer_getFrame(),str:format(...))
+	liblog.printf('frm.%6d: %s',api.timer_getFrame(),str:format(...))
 end
 
 local tsk_stage;
-local stagetasks = libtask.tasklist_new()
+local stagetasks = libtask.taskgarden_new()
 
 tsk_stage = libtask.task_new('a',function(task)
 	-- task is a variable that's the current task being
 	-- executed. in this case, it'd be tsk_stage.
 	
 	local function barrage_make()
-		stagetasks:add(2,'sample barrage',function(ts)
+		stagetasks:add(3,'sample barrage',function(ts)
 			printf_framed('now: %s',ts)
 			for i = 1,5 do
 				printf_framed('barrage enemy.')
