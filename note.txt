@@ -1,0 +1,13 @@
+-	C side calls function from lua...
+-	lua yields...
+	*	what if lua yeilds from a C function? the lua library doesn't know
+		whether or not yield() is being ran from C or lua!
+	*	it panics, and instead runs the continue function.
+-	what happens after the continue function? what does it return?
+-	okay, turns out that was incorrect, and yields work fine. it was just the
+	coroutine yielding which was odd.
+
+each stage should have:
+	-	the stage task calls a multitude of tasks within it:
+		-	messages for the background
+		-	subtasks to create
