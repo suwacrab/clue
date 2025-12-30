@@ -5,8 +5,8 @@ CC	:= clang
 CFLAGS := -Wall -Wshadow -Werror -Iinclude --std=gnu23
 CFLAGS += --write-user-dependencies -MP
 
-LDFLAGS := 
-LDFLAGS += $(shell pkgconf --libs lua)
+LDFLAGS := -static
+LDFLAGS += $(shell pkgconf --static --libs lua)
 
 # output --------------------------------------------------------------------@/
 OBJ_DIR := build

@@ -45,13 +45,11 @@ function task_mt:waitOnce()
 	coroutine.yield()
 end
 function task_mt:wait(f)
-	f = math.tointeger(f)
-	assert(f and f>0,"wait argument should be an integer > 0")
-	for i = 0,f-1 do
-		self._waittime = f - i
+	assert(math.tointeger(f) and f>=0,"wait argument should be an integer >= 0")
+	for i = 1,f do
 		self:waitOnce()
+		self._waittime = f - i
 	end
-	self._waittime = 0
 end
 function task_mt:waitInf()
 	while true do
