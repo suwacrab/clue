@@ -58,4 +58,3 @@ end
 -- assign it so the function actually gets used by the game
 api.assign_fnUpdate(fn_update)
 
-

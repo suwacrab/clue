@@ -82,12 +82,14 @@ void program_exec() {
 	auto lu = workarea->lua_state;
 
 	// load libraries --------------------------------------@/
-	program_lua_fileRequireBuiltin("workdata/libtask.lua","libtask");
-	program_lua_fileRequireBuiltin("workdata/liblog.lua","liblog");
+	program_lua_fileRequireBuiltin("workdata/script/libtask.lua","libtask");
+	program_lua_fileRequireBuiltin("workdata/script/liblog.lua","liblog");
+	program_lua_fileRequireBuiltin("workdata/script/libjson.lua","libjson");
+	program_lua_fileRequireBuiltin("workdata/script/libcommon.lua","libcommon");
 	printf("stack top: %d\n",lua_gettop(lu));
 
 	// run lua function..? ---------------------------------@/
-	program_lua_fileExec("workdata/main.lua");
+	program_lua_fileExec("workdata/script/main.lua");
 	for(int i=0; i<500; i++) {
 		program_lua_pushRegFn(workarea->luafn_stageupdate);
 		if(!lua_isfunction(lu,1)) {

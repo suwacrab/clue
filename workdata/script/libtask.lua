@@ -11,6 +11,7 @@ local function task_new(name,fn)
 		name = name;
 		_coro = nil;
 		_is_done = false;
+		_waittime = 0;
 	}
 	task = setmetatable(task,task_mt)
 
@@ -47,6 +48,7 @@ function task_mt:wait(f)
 	assert(math.tointeger(f) and f>=0,"wait argument should be an integer >= 0")
 	for i = 1,f do
 		self:waitOnce()
+		self._waittime = f - i
 	end
 end
 function task_mt:waitInf()
